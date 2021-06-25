@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@babel/core": "7.14.6",
+    "@babel/preset-env": "7.14.7",
+    "http-server": "0.12.3"
+  },
+  "scripts": {
+    "start": "http-server . -c-1"
+  }
+}

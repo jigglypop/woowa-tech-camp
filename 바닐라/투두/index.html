@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <section class="todoapp">
+        <header class="header">
+            <h1>투두</h1>
+            <input
+            class="new-todo"
+            placeholder="끝낼 것"
+            autocomplete=""/>
+        </header>
+
+        <section class="main">
+            <input
+            id="toggle-all"
+            class="toggle-all"
+            type="checkbox">
+            <label for="toggle-all">
+                모든 것 완료
+            </label>
+            <ul class="todo-list"></ul>
+        </section>
+        <footer class="footer">
+            <span class="todo-count"></span>
+            <ul class="filters">
+                <li>
+                    <a href="#/">모두</a>
+                </li>
+                <li>
+                    <a href="#/active">활성화</a>
+                </li>
+                <li>
+                    <a href="#/completed">완료</a>
+                </li>
+            </ul>
+            <button class="clear-completed">
+                클리어 완료
+            </button>
+        </footer>
+    </section>
+    <footer class="info">
+        <p>투두를 편집하려면 더블클릭</p>
+    </footer>
+    <script src="./scripts.js" type="module"></script>
+</body>
+</html>

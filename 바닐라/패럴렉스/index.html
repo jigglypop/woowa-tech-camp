@@ -8,8 +8,26 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div id="root">
-        <h1>우아한 테크 캠프</h1>
-    </div>
+    <section>
+        <ul class="text-outer">
+            <li class="scroll" data-rateY="2">우아한</li>
+            <li class="scroll">테크</li>
+            <li class="scroll" data-rateY="-2">캠프</li>
+        </ul>
+    </section>
+    <section></section>
+    <script>
+        window.addEventListener('scroll', function(){
+            const scrolls = document.querySelectorAll(".scroll")
+
+            for (let scroll of scrolls) {
+                let x = scroll.dataset.ratex ? window.pageYOffset* scroll.dataset.ratex : 0;
+                let y = scroll.dataset.ratey ? window.pageYOffset* scroll.dataset.ratey : 0;
+                let z = scroll.dataset.ratez ? scroll.dataset.ratez : 0;
+
+                scroll.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`
+            }
+        })
+    </script>
 </body>
 </html>
