@@ -1,18 +1,49 @@
-const React = (() => {
-  let Global = {};
-  let i = 0;
-
-  function Render(Component, root) {
-    Global.Component = Component;
-    Global.root = root;
-    i = 0;
-    const instance = Component();
+export default class React {
+  constructor(Component, root) {
+    this.i = 0;
+    this.Component = Component;
+    // 아우터 div
+    const $outer = document.createElement("div");
+    $outer.className = Component.name;
+    this.$outer = $outer;
+    // root에 달기
+    root.appendChild($outer);
     // 렌더링
-    root.innerHTML = instance.render;
-    // 바깥함수 이름 정하기
-    const outerName = Component.name;
-    const outer = root.children[0];
-    outer.classList.add(outerName);
+    this.render();
+  }
+
+  useState(state) {
+    if (!this.hooks) this.hooks = [];
+    const hooks = this.hooks;
+    const _state = hooks[this.i] || state;
+    hooks[this.i] = _state;
+    const setState = (() => {
+      let _i = this.i;
+      return (value) => {
+        this.hooks[_i] = value;
+        this.render(this.Component, this.root);
+      };
+    })();
+    this.i++;
+    return [_state, setState];
+  }
+
+  useEffect(cb, values) {
+    const hooks = this.hooks;
+    let _values = hooks[this.i];
+    let changed = true;
+    // some : values중 하나라도 true이면 true
+    if (_values) changed = values.some((d, i) => d !== _values[i]);
+    if (changed) cb();
+    hooks[this.i] = values;
+    this.i++;
+  }
+
+  render() {
+    this.i = 0;
+    const instance = this.Component();
+    // 렌더링
+    this.$outer.innerHTML = instance.render;
     // 메서드
     const methods = Object.keys(instance);
     for (let method of methods) {
@@ -25,46 +56,5 @@ const React = (() => {
         });
       }
     }
-    // Global.instance = instance;
-    return Global;
   }
-
-  const useState = (state) => {
-    // Global 객체 내 hooks 모음 초기화
-    if (!Global.hooks) Global.hooks = [];
-    // Global 내의 hooks 가져와서 있으면 쓰고 없으면 state 등록
-    const hooks = Global.hooks;
-    const _state = Global.hooks[i] || state;
-    hooks[i] = _state;
-    // setState
-    const setState = (() => {
-      // 클로저 내부에 해당 state의 i를 가져와 내부 클로저로 선언
-      let _i = i;
-      return (value) => {
-        // 바꿔주고 렌더링
-        Global.hooks[_i] = value;
-        Render(Global.Component, Global.root);
-      };
-    })();
-    // 인덱스 증가 후 리턴
-    i++;
-    return [_state, setState];
-  };
-  // useEffect
-  const useEffect = (cb, values) => {
-    const hooks = Global.hooks;
-    let _values = hooks[i];
-    let changed = true;
-
-    if (_values) {
-      // some : values중 하나라도 true이면 true
-      changed = values.some((d, i) => d !== _values[i]);
-    }
-    if (changed) cb();
-    hooks[i] = values;
-    i++;
-  };
-  return { Render, useState, useEffect };
-})();
-
-export default React;
+}

@@ -1,7 +1,5 @@
 const Scss = (root, text) => {
   const rootEls = document.querySelectorAll(`${root}`);
-  console.log(rootEls);
-
   // 파싱 부분
   // 공백 없애기
   const words = text.replace(/(\r\n\t|\n|\r\t|\s)/g, "");

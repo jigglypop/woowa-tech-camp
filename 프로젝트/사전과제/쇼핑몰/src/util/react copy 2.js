@@ -4,57 +4,22 @@ const React = (() => {
   let Global = {};
   let i = 0;
 
-  function init(Component, root) {
-    i = 0;
-    const instance = Component();
-    // root에 appendChild
+  const append = () => {
+    // css 적용, root에 달기
     const outerDiv = document.createElement("div");
-    outerDiv.className = Component.name;
-    root.appendChild(outerDiv);
-    // Global에 달기
-    Global.Component = Component;
-    Global.root = root;
-    Global.instance = instance;
+    outerDiv.className = Global.Component.name;
+    Global.root.appendChild(outerDiv);
     Global.outerDiv = outerDiv;
-    console.log(Global);
-    // 렌더링
-    render();
-  }
+  };
 
-  function add(Component, root) {
-    i = 0;
-    const instance = Component();
-    console.log(instance.css);
-    console.log(instance.render);
-    // const outerDiv = document.createElement("div");
-    // outerDiv.className = Component.name;
-    // root.appendChild(outerDiv);
-    // Global.render += instance.render;
-    // Global.css += instance.css;
-    // render();
-
-    // root에 appendChild
-    const outerDiv = document.createElement("div");
-    outerDiv.className = Component.name;
-    root.appendChild(outerDiv);
-
-    // Global.Component = Component;
-    // Global.root = root;
-    // Global.instance = instance;
-    // Global.outerDiv = outerDiv;
-    console.log(Global);
-
-    // 렌더링
-    render();
-  }
-
-  function render() {
-    i = 0;
-    const instance = Global.Component();
+  const rendering = (instance) => {
     // 렌더링
     const outerDiv = Global.outerDiv;
     outerDiv.innerHTML = "";
     outerDiv.innerHTML = instance.render;
+  };
+
+  const setMethod = (instance) => {
     const methods = Object.keys(instance);
 
     for (let method of methods) {
@@ -67,8 +32,35 @@ const React = (() => {
         });
       }
     }
-    Scss(`.${Global.Component.name}`, instance.css);
-  }
+  };
+
+  // 초기셋
+  const Component = (Component, root) => {
+    window[Component.name] = {};
+    Global = window[Component.name];
+
+    Global.Component = Component;
+    Global.root = root;
+    i = 0;
+    const instance = Component();
+    Global.instance = instance;
+    // root에 appendChild
+    append(Component);
+    rendering(instance);
+    setMethod(instance);
+    Scss(`.${Component.name}`, instance.css);
+  };
+
+  const render = (Component, root) => {
+    Global.root = root;
+    i = 0;
+    const instance = Component();
+    // 렌더링
+    rendering(instance);
+    // 메서드
+    setMethod(instance);
+    Scss(`.${Component.name}`, instance.css);
+  };
 
   const useState = (state) => {
     // Global 객체 내 hooks 모음 초기화
@@ -83,8 +75,9 @@ const React = (() => {
       let _i = i;
       return (value) => {
         // 바꿔주고 렌더링
+        console.log(Global, window);
         Global.hooks[_i] = value;
-        render();
+        render(Global.Component, Global.root);
       };
     })();
     // 인덱스 증가 후 리턴
@@ -96,13 +89,16 @@ const React = (() => {
     const hooks = Global.hooks;
     let _values = hooks[i];
     let changed = true;
-    // some : values중 하나라도 true이면 true
-    if (_values) changed = values.some((d, i) => d !== _values[i]);
+
+    if (_values) {
+      // some : values중 하나라도 true이면 true
+      changed = values.some((d, i) => d !== _values[i]);
+    }
     if (changed) cb();
     hooks[i] = values;
     i++;
   };
-  return { init, add, useState, useEffect };
+  return { Component, useState, useEffect };
 })();
 
 export default React;
