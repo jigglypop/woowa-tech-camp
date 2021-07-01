@@ -3,8 +3,9 @@ const { useEffect, useState } = React;
 
 export default function Count() {
   const [count, setCount] = useState(0);
-  const [word, setWord] = useState("");
-
+  useEffect(() => {
+    console.log(`${count}변경`);
+  }, [count]);
   return {
     onClickPlus: function () {
       setCount(count + 1);
@@ -12,11 +13,6 @@ export default function Count() {
     onClickMinus: function () {
       setCount(count - 1);
     },
-    css: `
-      .h1 {
-        color: red;
-      }
-    `,
     render: `
       <button id="plus">+</button>
       <button id="minus">-</button>

@@ -1,3 +1,5 @@
+import Scss from "./scss.js";
+
 const React = (() => {
   let Global = {};
   let i = 0;
@@ -21,9 +23,27 @@ const React = (() => {
 
   function add(Component, root) {
     i = 0;
+    const instance = Component();
+    console.log(instance.css);
+    console.log(instance.render);
+    // const outerDiv = document.createElement("div");
+    // outerDiv.className = Component.name;
+    // root.appendChild(outerDiv);
+    // Global.render += instance.render;
+    // Global.css += instance.css;
+    // render();
+
+    // root에 appendChild
     const outerDiv = document.createElement("div");
     outerDiv.className = Component.name;
     root.appendChild(outerDiv);
+
+    // Global.Component = Component;
+    // Global.root = root;
+    // Global.instance = instance;
+    // Global.outerDiv = outerDiv;
+    console.log(Global);
+
     // 렌더링
     render();
   }
@@ -35,6 +55,19 @@ const React = (() => {
     const outerDiv = Global.outerDiv;
     outerDiv.innerHTML = "";
     outerDiv.innerHTML = instance.render;
+    const methods = Object.keys(instance);
+
+    for (let method of methods) {
+      // onClick 메서드
+      if (method.match(/on(C|c)lick*/g)) {
+        const name = method.replace(/on(C|c)lick*/g, "").toLowerCase();
+        const button = document.querySelector(`#${name}`);
+        button.addEventListener("click", () => {
+          instance[method]();
+        });
+      }
+    }
+    Scss(`.${Global.Component.name}`, instance.css);
   }
 
   const useState = (state) => {
