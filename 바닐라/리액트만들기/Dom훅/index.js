@@ -12,4 +12,6 @@ memoset.setModule([App, Word, WordB, Count]);
 // 렌더링
 const root = document.getElementById("root");
 const [_, _cb, $target, _react] = new Component(App, root, null);
-_react.init(_cb, $target);
+_react.init(_cb, root);
+// 메서드 달기
+_react.setMethodsAll();

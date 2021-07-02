@@ -1,10 +1,4 @@
 // 돔트리 만들기
-// export const getDoms = (tree) => {
-//   return tree.match(
-//     /((<([a-zA-Z0-9\-\s=\"\$])*>).*?(<\/([a-zA-Z0-9\-\s=\"\$])*>))|(<([a-zA-Z0-9\-\s=\"\$])*>)|(<\/([a-zA-Z0-9\-\s=\"\$])*>)|(<[A-Z]([a-zA-Z0-9\-\s=\"\$])*\/>)/g
-//   );
-// };
-
 import { getDoms } from "./tags.js";
 
 // 모듈 등록

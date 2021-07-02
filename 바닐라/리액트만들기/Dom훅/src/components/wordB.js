@@ -1,6 +1,6 @@
 export default function WordB() {
   const { useState, useEffect } = this;
-  const [wordB, setWordB] = useState("");
+  const [wordB, setWordB] = useState("B");
 
   return {
     onWordB() {

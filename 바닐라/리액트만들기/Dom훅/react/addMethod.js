@@ -1,3 +1,5 @@
+import { memoset } from "../index.js";
+
 export const addOnClick = (div) => {
   // onClick버튼 찾기
   const buttons = div.querySelectorAll("button");
@@ -11,4 +13,8 @@ export const addOnClick = (div) => {
       }
     }
   }
+};
+
+export const setMethod = (El, attr, value) => {
+  El.setAttribute(attr, value);
 };

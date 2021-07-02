@@ -11,5 +11,6 @@ import renderTree from "./util/renderTree.js";
 const instance = setModule([Count, Word, App, Main]);
 let appDoms = mergeTree(instance);
 const dom = parseArea(appDoms);
+console.log(dom);
 // 트리 그리기
 renderTree(document.querySelector("#root"), dom);

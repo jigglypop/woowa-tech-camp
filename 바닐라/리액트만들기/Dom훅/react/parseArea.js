@@ -83,7 +83,7 @@ export const parseArea = (domArray) => {
   if (tempObj.class) {
     for (let c of tempObj.class) {
       if (isOuter(c)) {
-        idObj[tempObj.id[0]] = tempObj;
+        idObj[tempObj.id[0]] = Object.assign(tempObj);
       }
     }
   }
@@ -91,8 +91,7 @@ export const parseArea = (domArray) => {
   for (let [start, end] of splits) {
     const [_tempObj, _idObj] = parseArea(domArray.slice(start, end + 1));
     tempObj.child.push(_tempObj);
-    idObj = { ...idObj, ..._idObj };
+    idObj = Object.assign(idObj, _idObj);
   }
-  console.log(tempObj);
   return [tempObj, idObj];
 };
