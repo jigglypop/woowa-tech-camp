@@ -1,6 +1,7 @@
 import getID from "./getID.js";
 import { memoset } from "./index.js";
 import { Component as Comp } from "./react.js";
+import Word from "./src/word.js";
 
 const React = function () {
   let global = {
@@ -14,7 +15,7 @@ const React = function () {
     global.hooks = _hooks;
   }
   // 렌더링
-  function render(Component, target, _id) {
+  function render(Component, target, _hooks) {
     // 루트 타겟 잡기
     $target = target;
     // 글로벌 컴포넌트 세팅, instance 만들기
@@ -23,10 +24,25 @@ const React = function () {
     i = 0;
     global.instance = instance;
     // id가 없으면 세팅
-    if (!global.id) global.id = getID();
+    if (!global.id) {
+      global.id = getID();
+    }
     let jsx = instance.jsx;
     let div = document.getElementById(global.id);
     // 처음 만들어줄때
+    let tempJsx = [];
+    // jsx태그 기초 세팅
+    const ComponentJsx = jsx.match(/(<.*\_([0-9]*)>)(<\/.*\_([0-9])*>)/g);
+    if (ComponentJsx) {
+      for (let jsxname of ComponentJsx) {
+        // jsx 리플레이스
+        const replacename = jsxname.split(">")[0].replace(/</g, "");
+        const newJsx = `<div class="${replacename}" ></div>`;
+        jsx = jsx.replace(jsxname, newJsx);
+        tempJsx.push(replacename);
+      }
+    }
+    // 처음 만드는 div
     if (!div) {
       const root = target;
       div = document.createElement("div");
@@ -37,38 +53,33 @@ const React = function () {
       // 자식 컴포넌트 달기
       div = document.getElementById(global.id);
     }
-    // jsx태그 기초 세팅
-    let jsxs = [];
-    const ComponentJsx = jsx.match(/(<.*-([0-9]*)>)(<\/.*-([0-9])*>)/g);
-    if (ComponentJsx) {
-      for (let jsxname of ComponentJsx) {
-        // jsx 리플레이스
-        const replacename = jsxname.split(">")[0].replace(/</g, "");
-        const newJsx = `<div id="${replacename}${global.id}" class="${replacename}" ></div>`;
-        jsx = jsx.replace(jsxname, newJsx);
-        jsxs.push(replacename);
-      }
-    }
-    // 처음 만드는 div
     div.innerHTML = jsx;
     // 컴포넌트 jsx가 있을 경우
-    memoset.setMemo(_id, global);
-
-    if (jsxs.length !== 0) {
-      for (let _replacename of jsxs) {
-        const dom = div.querySelector(`#${_replacename}${global.id}`);
+    // 컴포넌트 렌더링 후 querySelector
+    if (tempJsx.length !== 0) {
+      for (let _jsx of tempJsx) {
+        const dom = div.querySelector(`.${_jsx}`);
+        let memo = memoset.memo;
         // 함수 모듈 가져오기
-        const modulename = _replacename.split("-")[0];
+        const modulename = _jsx.split("_")[0];
         const modules = memoset.modules[modulename];
         // 바로 안쪽 div
-        dom.innerHTML = "";
-        const [_render, _cb, $target] = new Comp(
-          modules,
-          dom,
-          memoset.memo[dom.id]
-        );
-        console.log(memoset.memo);
-        _render(_cb, $target, dom.id);
+        const outer = div.querySelector(`.${modulename}Outer`);
+        let oldId = "";
+        if (outer.id) {
+          oldId = outer.id;
+        }
+        let _comp = null;
+        // 이전 값이 있는지 확인
+        if (memo[_jsx]) {
+          // 있으면 비우고 새로 갈아끼우기
+          dom.innerHTML = "";
+          _comp = new Comp(modules, dom, memo[_jsx]);
+        } else {
+          // 없으면 새로
+          _comp = new Comp(modules, dom);
+        }
+        memoset.setMemo(_jsx, _comp);
       }
     }
     // onClick버튼 찾기
@@ -119,10 +130,11 @@ export const Component = function (cb, $target, _value) {
   const react = new React();
   const _cb = cb.bind(react);
   // 원래 있던 클로저 복제
+  let _hooks = null;
   if (_value) {
     react.setHooks(_value.hooks);
   }
-  return [react.render, _cb, $target];
+  return react.render(_cb, $target, _hooks);
 };
 
 export default React;

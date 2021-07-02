@@ -14,7 +14,7 @@ const React = function () {
     global.hooks = _hooks;
   }
   // 렌더링
-  function render(Component, target, _id) {
+  function render(Component, target) {
     // 루트 타겟 잡기
     $target = target;
     // 글로벌 컴포넌트 세팅, instance 만들기
@@ -51,9 +51,9 @@ const React = function () {
     }
     // 처음 만드는 div
     div.innerHTML = jsx;
+    console.log(jsx);
     // 컴포넌트 jsx가 있을 경우
-    memoset.setMemo(_id, global);
-
+    // 컴포넌트 렌더링 후 querySelector
     if (jsxs.length !== 0) {
       for (let _replacename of jsxs) {
         const dom = div.querySelector(`#${_replacename}${global.id}`);
@@ -61,14 +61,22 @@ const React = function () {
         const modulename = _replacename.split("-")[0];
         const modules = memoset.modules[modulename];
         // 바로 안쪽 div
-        dom.innerHTML = "";
-        const [_render, _cb, $target] = new Comp(
-          modules,
-          dom,
-          memoset.memo[dom.id]
-        );
-        console.log(memoset.memo);
-        _render(_cb, $target, dom.id);
+        let oldId = "";
+        if (dom) oldId = dom.id;
+        let _comp = null;
+        // 이전 값이 있는지 확인
+        if (memoset.memo[oldId]) {
+          // 있으면 비우고 새로 갈아끼우기
+          dom.innerHTML = "";
+          // const temp = { ...memoset.memo[oldId] };
+          _comp = new Comp(modules, dom, memoset.memo[oldId]);
+          memoset.removeMemo(oldId);
+          // memoset.setMemo(oldId, _comp);
+        } else {
+          // 없으면 새로
+          _comp = new Comp(modules, dom);
+          // memoset.setMemo(oldId, _comp);
+        }
       }
     }
     // onClick버튼 찾기
@@ -83,7 +91,7 @@ const React = function () {
         }
       }
     }
-    return global;
+    return global, 1;
   }
 
   function useState(initialState) {
@@ -122,7 +130,7 @@ export const Component = function (cb, $target, _value) {
   if (_value) {
     react.setHooks(_value.hooks);
   }
-  return [react.render, _cb, $target];
+  return react.render(_cb, $target);
 };
 
 export default React;
