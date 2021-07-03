@@ -9,11 +9,13 @@ export default function App() {
       setCount(count - 1);
     },
     jsx: `
-      <h1>카운트: ${count}</h1>
-      <button data-onClick="onPlus">증가</button>
-      <button data-onClick="onMinus">감소</button>
-      <Word/>
-      <Word/>
+      <div>
+        <h1>카운트: ${count}</h1>
+        <button data-onClick="onPlus">증가</button>
+        <button data-onClick="onMinus">감소</button>
+        <Word/>
+        <Word/>
+      </div>
     `,
   };
 }

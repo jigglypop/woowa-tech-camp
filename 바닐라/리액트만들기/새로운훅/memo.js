@@ -1,6 +1,8 @@
 const MemoSet = function () {
   let memo = {};
   let modules = {};
+  // let keys = {};
+
   return {
     // 메모
     setMemo(id, value) {
@@ -15,13 +17,13 @@ const MemoSet = function () {
       return memo;
     },
     // 모듈
-    setModule(Components) {
+    setModules(Components) {
       for (let comp of Components) {
         modules[comp.name] = comp;
       }
       return modules;
     },
-    getModule() {
+    getModules() {
       return modules;
     },
   };

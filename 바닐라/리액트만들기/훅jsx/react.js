@@ -1,6 +1,6 @@
 import getID from "./getID.js";
 import { memoset } from "./index.js";
-import { Component as Comp } from "./react.js";
+import { Component as _Component } from "./Components.js";
 
 const React = function () {
   let global = {
@@ -25,64 +25,31 @@ const React = function () {
     // id가 없으면 세팅
     if (!global.id) global.id = getID();
     let jsx = instance.jsx;
-    let div = document.getElementById(global.id);
-    // 처음 만들어줄때
-    if (!div) {
-      const root = target;
-      div = document.createElement("div");
-      div.id = global.id;
-      div.className = Component.name + "Outer";
-      // root에 달기
-      root.appendChild(div);
-      // 자식 컴포넌트 달기
-      div = document.getElementById(global.id);
-    }
+    let div = document.createElement("div");
+    div.id = global.id;
+    div.className = Component.name + "Outer";
+    // root에 달기
+    target.appendChild(div);
+    // 자식 컴포넌트 달기
+    div = document.getElementById(global.id);
     // jsx태그 기초 세팅
     let jsxs = [];
-    const ComponentJsx = jsx.match(/(<.*-([0-9]*)>)(<\/.*-([0-9])*>)/g);
-    if (ComponentJsx) {
-      for (let jsxname of ComponentJsx) {
-        // jsx 리플레이스
-        const replacename = jsxname.split(">")[0].replace(/</g, "");
-        const newJsx = `<div id="${replacename}${global.id}" class="${replacename}" ></div>`;
-        jsx = jsx.replace(jsxname, newJsx);
-        jsxs.push(replacename);
-      }
-    }
+    // const ComponentJsx = jsx.match(/(<.*-([0-9]*)>)(<\/.*-([0-9])*>)/g);
+    // if (ComponentJsx) {
+    //   for (let jsxname of ComponentJsx) {
+    //     // jsx 리플레이스
+    //     const memo = memoset.getMemo();
+    //     const replacename = jsxname.split(">")[0].replace(/</g, "");
+    //     if (!memo[`${replacename}${_id}`]) {
+    //       const newJsx = `<div id="${global.id}" class="${replacename}" ></div>`;
+    //       jsx = jsx.replace(jsxname, newJsx);
+    //       jsxs.push(replacename);
+    //     }
+    //   }
+    // }
     // 처음 만드는 div
     div.innerHTML = jsx;
     // 컴포넌트 jsx가 있을 경우
-    memoset.setMemo(_id, global);
-
-    if (jsxs.length !== 0) {
-      for (let _replacename of jsxs) {
-        const dom = div.querySelector(`#${_replacename}${global.id}`);
-        // 함수 모듈 가져오기
-        const modulename = _replacename.split("-")[0];
-        const modules = memoset.modules[modulename];
-        // 바로 안쪽 div
-        dom.innerHTML = "";
-        const [_render, _cb, $target] = new Comp(
-          modules,
-          dom,
-          memoset.memo[dom.id]
-        );
-        console.log(memoset.memo);
-        _render(_cb, $target, dom.id);
-      }
-    }
-    // onClick버튼 찾기
-    const buttons = div.querySelectorAll("button");
-    if (buttons) {
-      for (let button of buttons) {
-        const onClick = button.dataset.onclick;
-        if (onClick) {
-          button.addEventListener("click", function () {
-            if (typeof instance[onClick] === "function") instance[onClick]();
-          });
-        }
-      }
-    }
     return global;
   }
 
@@ -112,17 +79,6 @@ const React = function () {
     i++;
   }
   return { render, useState, useEffect, global, setHooks };
-};
-
-// 함수 내부에서 react 훅을 쓸 수 있게 바인딩
-export const Component = function (cb, $target, _value) {
-  const react = new React();
-  const _cb = cb.bind(react);
-  // 원래 있던 클로저 복제
-  if (_value) {
-    react.setHooks(_value.hooks);
-  }
-  return [react.render, _cb, $target];
 };
 
 export default React;
