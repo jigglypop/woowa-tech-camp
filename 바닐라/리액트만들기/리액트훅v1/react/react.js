@@ -1,20 +1,8 @@
 import getID from "./getID.js";
-import { memoset, setClick } from "./index.js";
+import { memoset } from "../index.js";
 import { Closure } from "./Closure.js";
-
-const isJsx = (text) => {
-  const openTag = "(<.*>)";
-  const closeTag = "(</.*>)";
-  const jsxTag = `${openTag}${closeTag}`;
-  const regex = new RegExp(jsxTag, "g");
-  return text.match(regex);
-};
-
-const getTag = (text) => {
-  const componentTag = "[A-Z]([a-zA-Z])*";
-  const regex = new RegExp(componentTag, "g");
-  return text.match(regex) ? text.match(regex)[0] : null;
-};
+import { setClick } from "./methods.js";
+import { getTag, isJsx } from "./tags.js";
 
 const React = function () {
   let global = {
@@ -27,7 +15,7 @@ const React = function () {
   function setHooks(_hooks) {
     global.hooks = _hooks;
   }
-  // 렌더링
+  // 초기 렌더링
   function render(Component, target) {
     // 메모셋 가져오기
     // 루트 타겟 잡기
@@ -158,12 +146,11 @@ const React = function () {
     // 루트 타겟 잡기
     const El = document.getElementById(now.id);
     _react.global = memo[now.id];
-    console.log(_react.global);
+    // 메서드 초기화
     setClick(_react.global.id);
     for (let child of El.childNodes) {
       if (child.classList) {
         if (child.classList.contains("Outer")) {
-          console.log(memo[child.id]);
           const name = memo[child.id].name.split(" ")[1];
           const _Component = memoset.getModules()[name];
           resetClosure(now, child, _Component, count + 1);
@@ -188,6 +175,7 @@ const React = function () {
     return [_state, setState];
   }
 
+  // useEffect
   function useEffect(cb, value) {
     const hooks = global.hooks;
     let _value = hooks[i];
