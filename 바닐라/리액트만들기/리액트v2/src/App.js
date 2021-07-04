@@ -5,6 +5,8 @@ export default function App() {
     console.log("---앱 시작---");
   }, []);
 
+  const Arr = [1, 2, 3];
+
   return {
     css: `
       .AppInner {
@@ -14,7 +16,9 @@ export default function App() {
     jsx: `
     <div class="AppInner" >
       <h1>앱부분</h1>
-      <Count></Count>
+      ${Arr.map((item) => {
+        return "<Count></Count>\n";
+      }).join("")}
     </div>
     `,
   };
